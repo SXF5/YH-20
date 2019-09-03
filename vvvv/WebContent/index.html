@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" name="viewport" content="width=device-width" />
+<title>WebSocket 客户端</title>
+</head>
+<style>
+body {
+	text-align: center;
+}
+
+#div1 {
+	width: 802px;
+	height: 500px;
+	border: 1px solid red;
+	margin: auto
+}
+
+#cs {
+	width: 650px;
+	height: 350px;
+	border: 1px solid red;
+	float: left;
+}
+
+#cs2 {
+	width: 148px;
+	height: 350px;
+	border: 1px solid red;
+	float: left;
+}
+
+p {
+	text-align: left
+}
+
+#ss {
+	height: 109px;
+	width: 796px;
+}
+
+#cs, #cs2 {
+	OVERFLOW: auto;
+}
+
+#btnSend {
+	float: right;
+	width: 100px;
+	height: 30px;
+}
+</style>
+<body>
+	<h2>聊天室</h2>
+	用户名:
+	<input type="text" id="username" />
+	<input type="button" id="btnConnection" value="打开连接"
+		onclick="connection()" />
+	<input type="button" id="btnClose" value="关闭连接" onclick="close()"/>
+	<div id="div1">
+		<div id="cs"></div>
+		<div id="cs2"></div>
+		<textarea id="ss"></textarea><br /> 
+		<input type="button" id="btnSend" value="发送" onclick="send()" />
+	</div>
+
+</body>
+<script type="text/javascript">
+	var username = document.getElementById("username");
+	var cs = document.getElementById("cs");
+	var cs2 = document.getElementById("cs2");
+	var ss = document.getElementById("ss");
+	
+	var socket;
+	var cs2html,cshtml;
+
+	
+	function connection(){
+		socket = new WebSocket("ws://localhost:8080/vvvv/ws/"+username.value);
+		socket.onopen = function (e){
+			cs2html = cs2.innerHTML;
+			cs2html += "<p>"+username.value+"连接成功！<p>";
+			cs2.innerHTML = cs2html;
+		}
+		
+		socket.onmessage = function (msg){
+			cshtml = cs.innerHTML;
+			cshtml += "<p>"+msg.data+"</p>";
+			cs.innerHTML = cshtml;
+		}
+		socket.onclose = function(e){
+			cs2html = cs2.innerHTML;
+			cs2html += "<p>"+username.value+"下线了"+"</p>";
+			cs2.innerHTML = cs2html;
+		}
+	}
+	
+	
+	
+	function send(){
+		//用send向服务器发消息
+		socket.send(ss.value);
+		ss.value="";
+	}
+	
+	function close(){
+		socket.close();
+	}
+</script>
+</html>
